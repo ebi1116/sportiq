@@ -1,0 +1,12 @@
+{% extends "screen_base.html" %}{% load static %}
+{% block title %}SportIQ | Your game, your numbers{% endblock %}
+{% block img %}{% static 'core/img/splash.jpg' %}{% endblock %}
+{% block overlay %}<div class="screen-overlay splash-status" aria-hidden="true"><div class="splash-tagline">YOUR GAME. <span>YOUR NUMBERS.</span></div><div class="splash-loading"><i class="loading-dot"></i> Preparing your performance space</div><div class="splash-progress"></div></div>{% endblock %}
+{% block hits %}<a class="hit" style="inset:0" href="{% url 'onboarding' 1 %}" aria-label="Continue"></a>{% endblock %}
+{% block js %}<script>
+const destination = localStorage.getItem('sportiq_onboarding_complete') === '1'
+  ? "{% url 'login' %}"
+  : "{% url 'onboarding' 1 %}";
+document.querySelector('.hit').href = destination;
+setTimeout(() => { location.href = destination; }, 2600);
+</script>{% endblock %}

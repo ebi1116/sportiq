@@ -1,0 +1,23 @@
+{% extends "base.html" %}{% block title %}Player analysis | SportIQ{% endblock %}{% block content %}
+<h4 class="mb-3">Player analysis</h4>{% include "_hero.html" %}
+<div class="cardx mb-3"><h6>Key insights</h6>{% for i in s.insights %}<div class="insight">{{ i }}</div>{% endfor %}</div>
+{% include "_tiles.html" %}
+{% if s.matches %}<div class="cardx mt-4"><h6>Runs and strike rate per match</h6><div class="chart-wrap"><canvas id="c1"></canvas></div></div>
+<div class="cardx mt-3"><h6>Wickets and economy per match</h6><div class="chart-wrap"><canvas id="c2"></canvas></div></div>
+<div class="cardx mt-3"><h6>Boundary count</h6><div class="chart-wrap"><canvas id="c3"></canvas></div></div>{% endif %}{% endblock %}
+{% block js %}{{ s.series|json_script:"series" }}<script>
+const S=JSON.parse(document.getElementById('series').textContent);
+if(S.labels.length){
+  Chart.defaults.color='#b99aa0';Chart.defaults.borderColor='#2a0f14';
+  const red='#ff1f3d', common={responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false}};
+  new Chart(document.getElementById('c1'),{type:'bar',data:{labels:S.labels,datasets:[
+    {type:'bar',label:'Runs',data:S.runs,backgroundColor:red,yAxisID:'y'},
+    {type:'line',label:'Strike rate',data:S.sr,borderColor:'#fff',backgroundColor:'#fff',pointRadius:3,yAxisID:'y1',spanGaps:true}
+  ]},options:{...common,scales:{y:{beginAtZero:true,title:{display:true,text:'Runs'}},y1:{position:'right',beginAtZero:true,grid:{display:false},title:{display:true,text:'Strike rate'}}}}});
+  new Chart(document.getElementById('c2'),{type:'bar',data:{labels:S.labels,datasets:[
+    {type:'bar',label:'Wickets',data:S.wkts,backgroundColor:red,yAxisID:'y'},
+    {type:'line',label:'Economy',data:S.econ,borderColor:'#fff',backgroundColor:'#fff',pointRadius:3,yAxisID:'y1',spanGaps:true}
+  ]},options:{...common,scales:{y:{beginAtZero:true,title:{display:true,text:'Wickets'}},y1:{position:'right',beginAtZero:true,grid:{display:false},title:{display:true,text:'Runs per over'}}}}});
+  new Chart(document.getElementById('c3'),{type:'doughnut',data:{labels:['Fours','Sixes'],datasets:[{data:S.mix,backgroundColor:[red,'#ff8a9b'],borderWidth:0}]},options:{...common,cutout:'68%',plugins:{tooltip:{callbacks:{label(context){const total=context.dataset.data.reduce((a,b)=>a+b,0);const value=context.parsed;const pct=total?((value/total)*100).toFixed(1):0;return `${context.label}: ${value} (${pct}%)`;}}}}}});
+}
+</script>{% endblock %}

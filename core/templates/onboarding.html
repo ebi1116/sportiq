@@ -1,0 +1,31 @@
+{% extends "screen_base.html" %}{% load static %}
+{% block title %}{{ step }} of 3 · SportIQ{% endblock %}
+{% block img %}{% static img %}{% endblock %}
+{% block overlay %}
+{% if step > 1 %}<a class="onboarding-hit onboarding-back" href="{{ prev }}" aria-label="Previous onboarding screen"></a>{% endif %}
+{% if next %}<a class="onboarding-hit onboarding-next" href="{{ next }}" aria-label="Continue to next onboarding screen"></a>
+{% else %}<a class="onboarding-start" id="get-started" href="{% url 'login' %}">Get started <span aria-hidden="true">→</span></a>{% endif %}
+{% endblock %}
+{% block js %}<script>
+let touchStartX = null;
+let swiping = false;
+const phone = document.getElementById('phone');
+phone.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; swiping = false; }, {passive:true});
+phone.addEventListener('touchend', e => {
+  if (touchStartX === null) return;
+  const delta = e.changedTouches[0].screenX - touchStartX;
+  if (Math.abs(delta) > 55) {
+    swiping = true;
+    const target = delta < 0 ? "{{ next|default:'' }}" : "{{ prev }}";
+    if (target) location.href = target;
+  }
+  touchStartX = null;
+}, {passive:true});
+phone.addEventListener('click', e => { if (swiping) { e.preventDefault(); e.stopPropagation(); swiping = false; } }, true);
+document.addEventListener('keydown', e => {
+  const target = e.key === 'ArrowRight' ? "{{ next|default:'' }}" : e.key === 'ArrowLeft' ? "{{ prev }}" : '';
+  if (target) location.href = target;
+});
+const start = document.getElementById('get-started');
+if (start) start.addEventListener('click', () => localStorage.setItem('sportiq_onboarding_complete', '1'));
+</script>{% endblock %}

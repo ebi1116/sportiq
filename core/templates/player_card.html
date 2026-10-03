@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% block title %}Player card | SportIQ{% endblock %}
+{% block content %}
+<div class="player-card-page">
+  <div class="player-card-poster">
+    <div class="player-card-copy">
+      <div class="player-card-kicker">SPORTIQ · PLAYER CARD</div>
+      <h1>{{ player.full_name }}</h1>
+      <p>{{ player.get_role_display }}{% if player.city %} · {{ player.city }}{% endif %}</p>
+      <div class="player-card-matches"><strong>{{ s.matches }}</strong><span>career matches</span></div>
+    </div>
+    {% if player.photo %}<img class="player-card-photo" src="{{ player.photo.url }}" alt="{{ player.full_name }}">{% else %}<div class="player-card-photo player-card-photo-empty">{{ player.full_name|first|upper }}</div>{% endif %}
+    <div class="player-card-glow"></div>
+  </div>
+
+  <div class="player-card-carousel" id="player-card-carousel" aria-label="Player stats cards">
+    <section class="player-card-section player-card-slide is-active" data-title="Batting">
+      <div class="player-card-section-heading"><span>01</span><div><h2>Batting</h2><p>Career batting record</p></div></div>
+      {% if s.bat.inn %}<div class="player-card-stats">
+        <div class="player-stat player-stat-primary"><strong>{{ s.bat.runs }}</strong><span>Runs</span></div>
+        <div class="player-stat player-stat-primary"><strong>{{ s.bat.sr }}</strong><span>Strike rate</span></div>
+        <div class="player-stat"><strong>{{ s.bat.inn }}</strong><span>Innings</span></div>
+        <div class="player-stat"><strong>{{ s.bat.avg }}</strong><span>Average</span></div>
+        <div class="player-stat"><strong>{{ s.bat.fifties }}</strong><span>50s</span></div>
+        <div class="player-stat"><strong>{{ s.bat.hundreds }}</strong><span>100s</span></div>
+        <div class="player-stat"><strong>{{ s.bat.hs }}</strong><span>High score</span></div>
+      </div>{% else %}<p class="player-card-empty">No batting figures recorded yet.</p>{% endif %}
+    </section>
+
+    <section class="player-card-section player-card-slide" data-title="Bowling" hidden>
+      <div class="player-card-section-heading"><span>02</span><div><h2>Bowling</h2><p>Career bowling record</p></div></div>
+      {% if s.bowl.inn %}<div class="player-card-stats">
+        <div class="player-stat player-stat-primary"><strong>{{ s.bowl.wkts }}</strong><span>Wickets</span></div>
+        <div class="player-stat player-stat-primary"><strong>{{ s.bowl.econ }}</strong><span>Economy</span></div>
+        <div class="player-stat"><strong>{{ s.bowl.inn }}</strong><span>Innings</span></div>
+        <div class="player-stat"><strong>{{ s.bowl.overs }}</strong><span>Overs</span></div>
+        <div class="player-stat"><strong>{{ s.bowl.avg }}</strong><span>Average</span></div>
+        <div class="player-stat"><strong>{{ s.bowl.best }}</strong><span>Best figures</span></div>
+        <div class="player-stat"><strong>{{ s.bowl.w5 }}</strong><span>5 wicket hauls</span></div>
+      </div>{% else %}<p class="player-card-empty">No bowling figures recorded yet.</p>{% endif %}
+    </section>
+
+    <section class="player-card-section opponent-section player-card-slide" data-title="Matches" hidden>
+      <div class="player-card-section-heading"><span>03</span><div><h2>Matches</h2><p>{{ s.matches }} career match{{ s.matches|pluralize }} · runs by opponent</p></div></div>
+      {% for row in opponents %}
+      <div class="opponent-row"><div class="opponent-team"><span class="opponent-dot"></span><div><strong>{{ row.name }}</strong><small>{{ row.matches }} match{{ row.matches|pluralize }}</small></div></div><strong class="opponent-runs">{{ row.runs }} <small>runs</small></strong></div>
+      {% empty %}<p class="player-card-empty">Your opponent record will appear here after you add matches.</p>{% endfor %}
+    </section>
+  </div>
+
+  <div class="player-card-pager">
+    <button class="pager-arrow" type="button" id="card-prev" aria-label="Previous card" disabled>‹</button>
+    <div class="pager-center"><div class="pager-dots" role="group" aria-label="Choose a player card"><button type="button" class="is-active" aria-label="Batting card"></button><button type="button" aria-label="Bowling card"></button><button type="button" aria-label="Matches card"></button></div><span id="card-page-label">Batting · 1 of 3</span></div>
+    <button class="pager-arrow" type="button" id="card-next" aria-label="Next card">›</button>
+  </div>
+  <button class="btn btn-red w-100 mt-3" type="button" id="download-card">↓&nbsp; Download card</button>
+</div>
+{% endblock %}
+{% block js %}
+<script>
+(() => {
+  const carousel = document.getElementById('player-card-carousel');
+  const slides = [...carousel.querySelectorAll('.player-card-slide')];
+  const dots = [...document.querySelectorAll('.pager-dots button')];
+  const prev = document.getElementById('card-prev');
+  const next = document.getElementById('card-next');
+  const label = document.getElementById('card-page-label');
+  let active = 0, touchX = null;
+  const show = index => {
+    active = Math.max(0, Math.min(slides.length - 1, index));
+    slides.forEach((slide, i) => { slide.hidden = i !== active; slide.classList.toggle('is-active', i === active); });
+    dots.forEach((dot, i) => { dot.classList.toggle('is-active', i === active); dot.setAttribute('aria-current', i === active ? 'true' : 'false'); });
+    prev.disabled = active === 0; next.disabled = active === slides.length - 1;
+    label.textContent = `${slides[active].dataset.title} · ${active + 1} of ${slides.length}`;
+  };
+  prev.addEventListener('click', () => show(active - 1));
+  next.addEventListener('click', () => show(active + 1));
+  dots.forEach((dot, i) => dot.addEventListener('click', () => show(i)));
+  carousel.addEventListener('touchstart', e => { touchX = e.changedTouches[0].screenX; }, {passive:true});
+  carousel.addEventListener('touchend', e => {
+    if (touchX === null) return;
+    const delta = e.changedTouches[0].screenX - touchX;
+    if (Math.abs(delta) > 45) show(active + (delta < 0 ? 1 : -1));
+    touchX = null;
+  }, {passive:true});
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') show(active + 1);
+    if (e.key === 'ArrowLeft') show(active - 1);
+  });
+
+  document.getElementById('download-card').addEventListener('click', async event => {
+    const button = event.currentTarget, slide = slides[active], canvas = document.createElement('canvas');
+    const rows = [...slide.querySelectorAll('.player-stat')].map(tile => [tile.querySelector('span').textContent.trim(), tile.querySelector('strong').textContent.trim()]);
+    const opponents = [...slide.querySelectorAll('.opponent-row')].map(row => [row.querySelector('.opponent-team strong').textContent.trim(), row.querySelector('.opponent-runs').textContent.trim()]);
+    const stats = rows.length ? rows : opponents;
+    canvas.width = 900; canvas.height = 1350;
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const bg = ctx.createLinearGradient(0, 0, W, H); bg.addColorStop(0, '#18070b'); bg.addColorStop(.43, '#390912'); bg.addColorStop(1, '#10090d');
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+    // Stadium light and energetic diagonal color fields.
+    const glow = ctx.createRadialGradient(650, 410, 15, 650, 410, 540); glow.addColorStop(0, '#ff334f77'); glow.addColorStop(1, '#ff334f00');
+    ctx.fillStyle = glow; ctx.fillRect(0, 0, W, 850);
+    ctx.save(); ctx.globalAlpha = .26;
+    for (let i = -900; i < 1500; i += 150) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i + 540, 0); ctx.lineTo(i - 100, 900); ctx.lineTo(i - 640, 900); ctx.closePath(); ctx.fillStyle = i % 300 ? '#ff334f' : '#d71936'; ctx.fill(); }
+    ctx.restore();
+    ctx.fillStyle = '#f5f4ed'; ctx.font = '800 23px Arial'; ctx.letterSpacing = '6px'; ctx.fillText('SPORTIQ  /  PLAYER EDITION', 60, 78);
+    const photoUrl = "{{ photo_url|escapejs }}";
+    if (photoUrl) {
+      const portrait = new Image();
+      portrait.src = photoUrl;
+      await new Promise(resolve => { portrait.onload = resolve; portrait.onerror = resolve; });
+      if (portrait.naturalWidth) {
+        const area = {x: 0, y: 110, w: W, h: 690};
+        const scale = Math.max(area.w / portrait.naturalWidth, area.h / portrait.naturalHeight);
+        const pw = portrait.naturalWidth * scale, ph = portrait.naturalHeight * scale;
+        ctx.save(); ctx.beginPath(); ctx.rect(area.x, area.y, area.w, area.h); ctx.clip();
+        ctx.globalAlpha = .88; ctx.drawImage(portrait, (W - pw) / 2, area.y + (area.h - ph) / 2, pw, ph); ctx.restore();
+      }
+    }
+    // Fade the portrait into the graphic so its lower edge blends into the title panel.
+    const fade = ctx.createLinearGradient(0, 490, 0, 820); fade.addColorStop(0, '#10090d00'); fade.addColorStop(1, '#10090d'); ctx.fillStyle = fade; ctx.fillRect(0, 490, W, 330);
+    ctx.fillStyle = '#390912'; ctx.fillRect(0, 755, W, 125);
+    ctx.fillStyle = '#ffffff'; ctx.font = '900 56px Arial'; ctx.letterSpacing = '0px';
+    const playerName = '{{ player.full_name|escapejs }}'.toUpperCase();
+    ctx.fillText(playerName, 56, 830, 790);
+    ctx.fillStyle = '#f0b8c0'; ctx.font = '700 22px Arial'; ctx.fillText('{{ player.get_role_display|escapejs }}{% if player.city %} · {{ player.city|escapejs }}{% endif %}'.toUpperCase(), 60, 864, 780);
+    ctx.fillStyle = '#eef5f4'; ctx.font = '700 22px Arial'; ctx.letterSpacing = '3px'; ctx.fillText(slide.dataset.title.toUpperCase() + '  /  CAREER RECORD', 60, 930);
+    const matchY = 1000;
+    ctx.fillStyle = '#ff334f'; ctx.fillRect(60, matchY - 48, 5, 76);
+    ctx.fillStyle = '#ffffff'; ctx.font = '900 64px Arial'; ctx.letterSpacing = '0px'; ctx.fillText('{{ s.matches }}', 84, matchY + 4);
+    ctx.fillStyle = '#e6b9c0'; ctx.font = '700 20px Arial'; ctx.fillText('MATCHES PLAYED', 88, matchY + 31);
+    const remaining = stats.slice(0, 4), columns = 2, gap = 20, cellW = (W - 120 - gap) / columns, cellH = 95;
+    const statsY = 1060;
+    remaining.forEach(([name, value], i) => {
+      const x = 60 + (i % columns) * (cellW + gap), y = statsY + Math.floor(i / columns) * (cellH + 14);
+      ctx.fillStyle = '#ffffff18'; ctx.fillRect(x, y, cellW, cellH);
+      ctx.fillStyle = '#f0b8c0'; ctx.font = '700 16px Arial'; ctx.letterSpacing = '2px'; ctx.fillText(name.toUpperCase(), x + 16, y + 29, cellW - 32);
+      ctx.fillStyle = '#ffffff'; ctx.font = '900 36px Arial'; ctx.letterSpacing = '0px'; ctx.fillText(value, x + 16, y + 72, cellW - 32);
+    });
+    ctx.fillStyle = '#ff334f'; ctx.fillRect(60, 1290, 780, 3);
+    ctx.fillStyle = '#f0dadd'; ctx.font = '700 16px Arial'; ctx.letterSpacing = '3px'; ctx.fillText('YOUR GAME. YOUR NUMBERS.', 60, 1325);
+    const link = document.createElement('a');
+    link.download = `sportiq-${'{{ player.username|escapejs }}'}-${slide.dataset.title.toLowerCase()}.png`;
+    link.href = canvas.toDataURL('image/png'); link.click();
+    button.textContent = '✓  Downloaded';
+    window.setTimeout(() => { button.innerHTML = '↓&nbsp; Download card'; }, 1800);
+  });
+  show(0);
+})();
+</script>
+{% endblock %}

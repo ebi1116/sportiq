@@ -1,0 +1,45 @@
+{% load static %}<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#08080b"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="SportIQ"><link rel="manifest" href="{% url 'pwa_manifest' %}"><link rel="apple-touch-icon" href="{% static 'core/img/pwa-apple-touch-icon.png' %}"><link rel="icon" href="{% static 'core/img/favicon.ico' %}" sizes="any"><link rel="icon" href="{% static 'core/img/pwa-192.png' %}" type="image/png"><link rel="stylesheet" href="{% static 'core/css/pwa.css' %}"><title>{% block title %}SportIQ{% endblock %}</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--red:#ff2948;--ink:#08080b;--muted:#b6b1b7}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--ink);color:#fff;font-family:Inter,system-ui,sans-serif}
+.stage{position:fixed;inset:0;display:flex;justify-content:center;align-items:center;background:radial-gradient(ellipse at 50% 0,#260c13 0,transparent 54%),#070709}
+.phone{position:relative;width:min(100vw,56.28dvh);height:auto;max-height:100dvh;aspect-ratio:941/1672;overflow:hidden;background:#09090c;isolation:isolate;animation:screen-in .55s cubic-bezier(.2,.8,.2,1) both}
+.phone>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;user-select:none;-webkit-user-drag:none}
+.screen-vignette{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,#05040720 0%,transparent 36%,#05040712 60%,#05040775 100%)}
+.hit{position:absolute;display:block;-webkit-tap-highlight-color:transparent;border-radius:24px}
+.screen-overlay{position:absolute;z-index:2}
+.splash-status{left:8%;right:8%;bottom:5.5%;padding:17px 18px;border:1px solid #ffffff20;border-radius:18px;background:#09090dcc;backdrop-filter:blur(16px);text-align:center;box-shadow:0 16px 40px #0005;pointer-events:none}
+.splash-status{overflow:hidden;animation:splash-rise .8s cubic-bezier(.2,.8,.2,1) both}
+.splash-tagline{font-size:.94rem;font-weight:800;letter-spacing:.11em;text-transform:uppercase;animation:tagline-in .7s .2s both}
+.splash-tagline span{color:var(--red)}
+.splash-loading{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:9px;color:#c6c2c7;font-size:.68rem;letter-spacing:.04em}
+.loading-dot{width:6px;height:6px;border-radius:50%;background:var(--red);box-shadow:0 0 12px #ff2948;animation:dot-pulse 1.1s ease-in-out infinite}
+.splash-progress{position:absolute;left:0;bottom:0;width:100%;height:2px;background:#ffffff12}
+.splash-progress::after{content:"";display:block;width:35%;height:100%;background:linear-gradient(90deg,transparent,var(--red),#ff8b9b);box-shadow:0 0 12px #ff2948;animation:progress-sweep 1.7s ease-in-out infinite}
+.onboarding-hit{position:absolute;z-index:3;top:0;bottom:0;display:block;-webkit-tap-highlight-color:transparent}
+.onboarding-next{left:0;right:0}
+.onboarding-back{left:0;width:16%}
+.onboarding-back~.onboarding-next{left:16%}
+.onboarding-start{position:absolute;z-index:4;left:12%;right:12%;bottom:8%;min-height:54px;display:flex;align-items:center;justify-content:center;gap:12px;border:1px solid #ff526577;border-radius:16px;background:linear-gradient(105deg,#d71936ed,#ff2948ed);box-shadow:0 10px 28px #ff294855;color:#fff;text-decoration:none;font-size:.95rem;font-weight:800;letter-spacing:.01em;backdrop-filter:blur(12px)}
+.onboarding-start span{font-size:1.2rem;font-weight:500}
+.onboarding-start:active{transform:scale(.985)}
+.google-cta:active{transform:scale(.985)}
+.google-cta{left:9.5%;top:86.8%;width:81%;height:7.5%;display:flex;align-items:center;justify-content:center;gap:12px;border-radius:18px;background:#fff;color:#17171a;text-decoration:none;font-size:clamp(.72rem,3.8vw,1rem);font-weight:800;box-shadow:0 12px 34px #ff304559;transition:transform .15s ease}
+.login-image-cta{left:10.7%;top:74.7%;width:78.6%;height:7.1%;display:block;border-radius:22px;background:transparent;box-shadow:none}
+.login-image-link{top:87.6%;height:2.2%;display:block;background:transparent}
+.login-terms-link{left:25.5%;width:23.5%}
+.login-privacy-link{left:57.2%;width:18.5%}
+.login-image-link:focus-visible{outline:2px solid #fff;outline-offset:2px;border-radius:3px}
+.google-g{font-family:Arial,sans-serif;font-weight:800;font-size:1.3em;background:conic-gradient(from -45deg,#4285f4 0 25%,#34a853 25% 45%,#fbbc05 45% 65%,#ea4335 65% 82%,#4285f4 82%);color:transparent;background-clip:text;-webkit-background-clip:text}
+.google-arrow{position:absolute;right:17px;font-size:1.25em;font-weight:500}
+@keyframes screen-in{from{opacity:0;transform:scale(1.015)}to{opacity:1;transform:scale(1)}}
+@keyframes splash-rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tagline-in{from{opacity:0;letter-spacing:.2em}to{opacity:1;letter-spacing:.11em}}
+@keyframes dot-pulse{0%,100%{opacity:.45;transform:scale(.75)}50%{opacity:1;transform:scale(1.25)}}
+@keyframes progress-sweep{from{transform:translateX(-110%)}to{transform:translateX(290%)}}
+@media(min-width:700px){.phone{width:min(94vw,474px,54.02dvh);border:1px solid #ffffff16;border-radius:24px;box-shadow:0 30px 90px #0009}.phone>img{border-radius:23px}}
+@media(prefers-reduced-motion:reduce){.phone,.splash-status,.splash-tagline,.loading-dot,.splash-progress::after{animation:none}.google-cta{transition:none}}
+</style></head>
+<body><main class="stage"><div class="phone" id="phone"><img src="{% block img %}{% endblock %}" alt="" draggable="false"><div class="screen-vignette"></div>{% block overlay %}{% endblock %}{% block hits %}{% endblock %}</div></main>{% block js %}{% endblock %}<script src="{% static 'core/js/pwa.js' %}" defer></script></body></html>

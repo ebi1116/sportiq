@@ -1,0 +1,4 @@
+﻿{% extends "screen_base.html" %}{% load static socialaccount %}
+{% block title %}Sign in · SportIQ{% endblock %}
+{% block img %}{% static 'core/img/login-screen.png' %}{% endblock %}
+{% block overlay %}<a class="screen-overlay login-image-cta" href="{% provider_login_url 'google' %}" aria-label="Continue to SportIQ with Google"></a><a class="screen-overlay login-image-link login-terms-link" href="{% url 'terms' %}" aria-label="Terms and Conditions"></a><a class="screen-overlay login-image-link login-privacy-link" href="{% url 'privacy' %}" aria-label="Privacy Policy"></a>{% endblock %}

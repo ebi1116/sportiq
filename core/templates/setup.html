@@ -1,0 +1,62 @@
+{% extends "base.html" %}{% block title %}{% if editing %}Edit profile{% else %}Create profile{% endif %} | SportIQ{% endblock %}{% block content %}<div class="cardx"><h4>{% if editing %}Edit your profile{% else %}Create your player profile{% endif %}</h4><p class="text-secondary">{% if editing %}Update your public identity and profile photo.{% else %}Add a photo and details to create your public identity on SportIQ.{% endif %}</p>
+{% if editing and profile.photo %}<div class="current-photo"><img src="{{ profile.photo.url }}" alt="Current profile photo"><span>Current profile photo</span></div>{% endif %}
+<form method="post" enctype="multipart/form-data" id="profile-form">{% csrf_token %}{% include "_form.html" %}<button class="btn btn-red w-100 mt-4">{% if editing %}Save changes{% else %}Save profile{% endif %}</button></form></div>{% endblock %}
+{% block js %}<script>
+(() => {
+  const input = document.querySelector('#profile-form input[type="file"]');
+  const panel = document.getElementById('photo-adjust');
+  const canvas = document.getElementById('photo-crop');
+  const zoomInput = document.getElementById('photo-zoom');
+  if (!input || !panel || !canvas) return;
+  const ctx = canvas.getContext('2d');
+  const size = canvas.width;
+  let image = null, zoom = 1, offsetX = 0, offsetY = 0, dragging = false, lastX = 0, lastY = 0;
+  const scale = () => Math.max(size / image.naturalWidth, size / image.naturalHeight) * zoom;
+  function draw() {
+    if (!image) return;
+    const s = scale(), w = image.naturalWidth * s, h = image.naturalHeight * s;
+    offsetX = Math.min(0, Math.max(size - w, offsetX));
+    offsetY = Math.min(0, Math.max(size - h, offsetY));
+    ctx.clearRect(0, 0, size, size);
+    ctx.drawImage(image, offsetX, offsetY, w, h);
+  }
+  input.addEventListener('change', () => {
+    const file = input.files && input.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) return;
+    const url = URL.createObjectURL(file), next = new Image();
+    next.onload = () => {
+      if (image && image.src.startsWith('blob:')) URL.revokeObjectURL(image.src);
+      image = next; zoom = 1; zoomInput.value = '1';
+      const s = scale(); offsetX = (size - image.naturalWidth * s) / 2; offsetY = (size - image.naturalHeight * s) / 2;
+      panel.hidden = false; draw();
+    };
+    next.onerror = () => URL.revokeObjectURL(url);
+    next.src = url;
+  });
+  zoomInput.addEventListener('input', () => { zoom = Number(zoomInput.value); draw(); });
+  canvas.addEventListener('pointerdown', event => { dragging = true; lastX = event.clientX; lastY = event.clientY; canvas.setPointerCapture(event.pointerId); });
+  canvas.addEventListener('pointermove', event => {
+    if (!dragging) return;
+    const bounds = canvas.getBoundingClientRect();
+    offsetX += (event.clientX - lastX) * size / bounds.width; offsetY += (event.clientY - lastY) * size / bounds.height;
+    lastX = event.clientX; lastY = event.clientY; draw();
+  });
+  canvas.addEventListener('pointerup', () => { dragging = false; });
+  canvas.addEventListener('pointercancel', () => { dragging = false; });
+  document.getElementById('profile-form').addEventListener('submit', event => {
+    if (!image) return;
+    event.preventDefault();
+    const out = document.createElement('canvas'); out.width = out.height = 512;
+    out.getContext('2d').drawImage(canvas, 0, 0, 512, 512);
+    const type = ['image/jpeg', 'image/png', 'image/webp'].includes(input.files[0].type) ? input.files[0].type : 'image/png';
+    out.toBlob(blob => {
+      if (!blob) { event.target.submit(); return; }
+      const ext = type === 'image/jpeg' ? 'jpg' : type.split('/')[1];
+      const cropped = new File([blob], `profile-crop.${ext}`, {type});
+      const transfer = new DataTransfer(); transfer.items.add(cropped); input.files = transfer.files;
+      event.target.submit();
+    }, type, .92);
+  });
+})();
+</script>{% endblock %}

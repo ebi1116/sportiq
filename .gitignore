@@ -1,0 +1,7 @@
+.env
+db.sqlite3
+venv/
+node_modules/
+.expo/
+staticfiles/
+__pycache__/

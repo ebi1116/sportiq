@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Terms and Conditions | SportIQ{% endblock %}
+{% block content %}
+<div class="cardx">
+  <div class="l text-uppercase fw-semibold" style="letter-spacing:.12em">SportIQ</div>
+  <h1 class="h3 mt-2">Terms and Conditions</h1>
+  <p class="text-secondary">Effective October 1, 2026</p>
+
+  <h2 class="h5 mt-4">Using SportIQ</h2>
+  <p>SportIQ lets you create a player profile, record cricket match performances, review statistics, and share a public player profile. By using the service, you agree to these terms. If you do not agree, do not use SportIQ.</p>
+
+  <h2 class="h5 mt-4">Accounts and information</h2>
+  <p>Sign in with Google and provide accurate profile and match information. Keep your account secure. You are responsible for activity carried out through your account and for ensuring you have permission to upload any profile photo or other content you provide.</p>
+
+  <h2 class="h5 mt-4">Public profiles</h2>
+  <p>Your player profile and summary statistics are publicly viewable at your SportIQ profile page. Do not add information or a photo that you do not want to share publicly. Detailed match entries are used to calculate your statistics and are not shown as a public match-by-match log.</p>
+
+  <h2 class="h5 mt-4">Free access and future plans</h2>
+  <p>SportIQ is currently free to access. Premium features or paid plans may be introduced in the future. If that happens, we will explain the features, price, and applicable terms before they begin. You will not be charged for a paid plan unless you choose to sign up for it.</p>
+
+  <h2 class="h5 mt-4">Acceptable use</h2>
+  <p>Do not misuse SportIQ, interfere with its operation, attempt to access another person’s account or data, or submit unlawful, deceptive, or infringing content. We may suspend access when reasonably necessary to protect users or the service.</p>
+
+  <h2 class="h5 mt-4">Statistics and availability</h2>
+  <p>Statistics are calculated from information entered by users and may be incomplete or inaccurate if that information is wrong. SportIQ is provided for tracking and informational purposes; it is not professional coaching or medical advice. We may update, change, or temporarily interrupt features as the service develops.</p>
+
+  <h2 class="h5 mt-4">Changes</h2>
+  <p>We may update these terms as SportIQ changes. The effective date above will be updated when the terms change. Continued use after an update means you accept the revised terms.</p>
+
+  <div class="d-flex flex-wrap gap-2 mt-3"><a class="btn btn-outline-light" href="{% url 'login' %}">Back to sign in</a><a class="btn btn-outline-light" href="{% url 'privacy' %}">Privacy Policy</a></div>
+</div>
+{% endblock %}
