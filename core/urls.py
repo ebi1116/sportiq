@@ -15,6 +15,8 @@ urlpatterns = [
     path("dashboard/", v.dashboard, name="dashboard"),
     path("player-card/", v.player_card, name="player_card"),
     path("matches/add/", v.add_match, name="add_match"),
+    path("matches/<int:match_id>/edit/", v.edit_match, name="edit_match"),
+    path("matches/<int:match_id>/delete/", v.delete_match, name="delete_match"),
     path("analysis/", v.analysis, name="analysis"),
     path("player/<slug:username>/", v.public_profile, name="public_profile"),
 ]

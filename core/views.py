@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpResponse
 from django.utils.text import slugify
 from .forms import MatchForm, PerfForm, ProfileForm
-from .models import MatchPerformance, Profile
+from .models import Match, MatchPerformance, Profile
 from .stats import analyse
 
 def pwa_manifest(request):
@@ -106,6 +106,33 @@ def add_match(request):
         messages.success(request, "Match saved. Your stats are updated.")
         return redirect("dashboard")
     return render(request, "add_match.html", {"mf": mf, "pf": pf})
+
+@profile_required
+def edit_match(request, match_id):
+    match = get_object_or_404(Match, id=match_id, player=request.profile)
+    performance = get_object_or_404(MatchPerformance, match=match)
+    mf = MatchForm(request.POST or None, instance=match)
+    pf = PerfForm(request.POST or None, instance=performance, initial={"overs": f"{performance.balls_bowled // 6}.{performance.balls_bowled % 6}"})
+    if request.method == "POST" and mf.is_valid() and pf.is_valid():
+        mf.save()
+        p = pf.save(commit=False)
+        p.match = match
+        p.balls_bowled = pf.balls
+        if not p.batted:
+            p.runs = p.balls_faced = p.fours = p.sixes = 0
+            p.not_out = False
+        p.save()
+        messages.success(request, "Match updated. Your stats are refreshed.")
+        return redirect("dashboard")
+    return render(request, "add_match.html", {"mf": mf, "pf": pf, "editing": True, "match": match})
+
+@profile_required
+def delete_match(request, match_id):
+    match = get_object_or_404(Match, id=match_id, player=request.profile)
+    if request.method == "POST":
+        match.delete()
+        messages.success(request, "Match deleted. Your stats are updated.")
+    return redirect("dashboard")
 
 @profile_required
 def analysis(request):

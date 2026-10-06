@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sportiq-pwa-v2';
+const CACHE_NAME = 'sportiq-pwa-v3';
 const APP_SHELL = [
   '/static/core/css/app.css',
   '/static/core/css/pwa.css',

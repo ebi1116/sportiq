@@ -1,4 +1,4 @@
-{% extends "base.html" %}{% block title %}Add a match | SportIQ{% endblock %}{% block content %}<div class="mb-3"><div class="l text-uppercase fw-semibold" style="letter-spacing:.12em">Match log</div><h4 class="mb-0 mt-1">Add your performance</h4></div><form method="post">{% csrf_token %}
+{% extends "base.html" %}{% block title %}{% if editing %}Edit{% else %}Add{% endif %} a match | SportIQ{% endblock %}{% block content %}<div class="mb-3"><div class="l text-uppercase fw-semibold" style="letter-spacing:.12em">Match log</div><h4 class="mb-0 mt-1">{% if editing %}Edit match vs {{ match.opponent }}{% else %}Add your performance{% endif %}</h4></div><form method="post">{% csrf_token %}
 <div class="cardx mb-3"><h5>Match details</h5><p class="text-secondary small mb-3">Set the scene for your performance.</p>{% include "_form.html" with form=mf %}</div>
 <div class="cardx mb-3"><h5>Your performance</h5><p class="text-secondary small">Leave bowling or fielding at 0 if you didn't do it. Untick "Batted" if you didn't bat.</p>{% include "_form.html" with form=pf %}</div>
-<button class="btn btn-red w-100">Save match</button></form>{% endblock %}
+<button class="btn btn-red w-100">{% if editing %}Save changes{% else %}Save match{% endif %}</button></form>{% endblock %}
