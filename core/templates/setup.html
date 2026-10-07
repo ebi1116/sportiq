@@ -47,8 +47,8 @@
   document.getElementById('profile-form').addEventListener('submit', event => {
     if (!image) return;
     event.preventDefault();
-    const out = document.createElement('canvas'); out.width = out.height = 512;
-    out.getContext('2d').drawImage(canvas, 0, 0, 512, 512);
+    const out = document.createElement('canvas'); out.width = out.height = 1024;
+    out.getContext('2d').drawImage(canvas, 0, 0, 1024, 1024);
     const type = ['image/jpeg', 'image/png', 'image/webp'].includes(input.files[0].type) ? input.files[0].type : 'image/png';
     out.toBlob(blob => {
       if (!blob) { event.target.submit(); return; }
@@ -56,7 +56,7 @@
       const cropped = new File([blob], `profile-crop.${ext}`, {type});
       const transfer = new DataTransfer(); transfer.items.add(cropped); input.files = transfer.files;
       event.target.submit();
-    }, type, .92);
+    }, type, .95);
   });
 })();
 </script>{% endblock %}

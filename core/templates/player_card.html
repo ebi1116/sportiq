@@ -93,9 +93,11 @@
     const rows = [...slide.querySelectorAll('.player-stat')].map(tile => [tile.querySelector('span').textContent.trim(), tile.querySelector('strong').textContent.trim()]);
     const opponents = [...slide.querySelectorAll('.opponent-row')].map(row => [row.querySelector('.opponent-team strong').textContent.trim(), row.querySelector('.opponent-runs').textContent.trim()]);
     const stats = rows.length ? rows : opponents;
-    canvas.width = 900; canvas.height = 1350;
+    const pixelRatio = 3;
+    canvas.width = 900 * pixelRatio; canvas.height = 1350 * pixelRatio;
     const ctx = canvas.getContext('2d');
-    const W = canvas.width, H = canvas.height;
+    ctx.scale(pixelRatio, pixelRatio);
+    const W = 900, H = 1350;
     const bg = ctx.createLinearGradient(0, 0, W, H); bg.addColorStop(0, '#18070b'); bg.addColorStop(.43, '#390912'); bg.addColorStop(1, '#10090d');
     ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
     // Stadium light and energetic diagonal color fields.
@@ -109,7 +111,7 @@
     if (photoUrl) {
       const portrait = new Image();
       portrait.src = photoUrl;
-      await new Promise(resolve => { portrait.onload = resolve; portrait.onerror = resolve; });
+      try { await portrait.decode(); } catch (_) {}
       if (portrait.naturalWidth) {
         const area = {x: 0, y: 110, w: W, h: 690};
         const scale = Math.max(area.w / portrait.naturalWidth, area.h / portrait.naturalHeight);
@@ -142,7 +144,10 @@
     ctx.fillStyle = '#f0dadd'; ctx.font = '700 16px Arial'; ctx.letterSpacing = '3px'; ctx.fillText('YOUR GAME. YOUR NUMBERS.', 60, 1325);
     const link = document.createElement('a');
     link.download = `sportiq-${'{{ player.username|escapejs }}'}-${slide.dataset.title.toLowerCase()}.png`;
-    link.href = canvas.toDataURL('image/png'); link.click();
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    if (!blob) { button.textContent = 'Could not create card'; return; }
+    link.href = URL.createObjectURL(blob); link.click();
+    window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
     button.textContent = '✓  Downloaded';
     window.setTimeout(() => { button.innerHTML = '↓&nbsp; Download card'; }, 1800);
   });
