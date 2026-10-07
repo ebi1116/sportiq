@@ -163,11 +163,23 @@
     matches: "{{ s.matches|escapejs }}",
     battingStats: [
       ["Runs", "{{ s.bat.runs|escapejs }}"],
+      ["Strike rate", "{{ s.bat.sr|escapejs }}"],
+      ["Innings", "{{ s.bat.inn|escapejs }}"],
+      ["Average", "{{ s.bat.avg|escapejs }}"],
       ["Highest score", "{{ s.bat.hs|escapejs }}"],
       ["4s", "{{ s.bat.fours|escapejs }}"],
       ["6s", "{{ s.bat.sixes|escapejs }}"],
       ["50s", "{{ s.bat.fifties|escapejs }}"],
       ["100s", "{{ s.bat.hundreds|escapejs }}"]
+    ],
+    bowlingStats: [
+      ["Wickets", "{{ s.bowl.wkts|escapejs }}"],
+      ["Economy", "{{ s.bowl.econ|escapejs }}"],
+      ["Innings", "{{ s.bowl.inn|escapejs }}"],
+      ["Overs", "{{ s.bowl.overs|escapejs }}"],
+      ["Average", "{{ s.bowl.avg|escapejs }}"],
+      ["Best figures", "{{ s.bowl.best|escapejs }}"],
+      ["5 wicket hauls", "{{ s.bowl.w5|escapejs }}"]
     ]
   };
   show(0);
