@@ -14,7 +14,8 @@
     {name:'Sunset', style:'sunset', colors:['#081520','#6e351f','#ff9b50'], ink:'#fff'},
     {name:'Ice Blue', style:'ice', colors:['#07172a','#10365a','#66d4ff'], ink:'#fff'},
     {name:'Boundary Green', style:'green', colors:['#07170d','#16451e','#a5df53'], ink:'#fff'},
-    {name:'Editorial', style:'editorial', colors:['#f3f0e9','#171717','#e33a36'], ink:'#151515'}
+    {name:'Editorial', style:'editorial', colors:['#f3f0e9','#171717','#e33a36'], ink:'#151515'},
+    {name:'Full Bleed', style:'fullbleed', colors:['#090b10','#171a22','#ff334f'], ink:'#fff'}
   ];
   let dialog, photoPromise;
 
@@ -68,6 +69,15 @@
       text(playerName,38,490,100,'#ffffff12',900,820);cover(150,100,600,650,.9);brand(58,75);text(playerName,58,820,54,'#fff',900,780);text(role,60,864,20,subColor,700);text(`${data.matches} MATCHES PLAYED`,60,930,22,accent,800);ctx.strokeStyle='#66d4ff88';ctx.lineWidth=2;ctx.strokeRect(58,970,784,250);items.slice(0,5).forEach(([label,value],i)=>{const x=72+i*153;text(value,x,1065,31,'#fff',900,140);text(label.toUpperCase(),x,1107,12,'#b6e8ff',700,140);});footer();
     } else if (theme.style==='green') {
       cover(0,0,W,820,.84);const fade=ctx.createLinearGradient(0,500,0,900);fade.addColorStop(0,'#07170d00');fade.addColorStop(1,dark);ctx.fillStyle=fade;ctx.fillRect(0,480,W,420);brand();text(playerName,58,875,55,'#fff',900,780);text(role,60,916,20,subColor,700);text(`${data.matches} MATCHES PLAYED`,60,984,21,accent,800);statsGrid(60,1020,780,4,items.slice(0,4));footer();
+    } else if (theme.style==='fullbleed') {
+      cover(0,0,W,H,.96);
+      const shade=ctx.createLinearGradient(0,0,0,H);shade.addColorStop(0,'#08090a66');shade.addColorStop(.42,'#08090a00');shade.addColorStop(.58,'#08090a55');shade.addColorStop(.72,'#08090ad9');shade.addColorStop(1,'#08090af5');ctx.fillStyle=shade;ctx.fillRect(0,0,W,H);
+      brand(58,72,'#fff');
+      text(playerName,58,810,58,'#fff',900,780);text(role,62,852,20,'#f4e9eb',700,760);
+      text(`${data.matches} MATCHES PLAYED`,60,920,21,accent,800,760);
+      const cardW=145,gap=13,cardY=965,cardH=235;
+      items.slice(0,5).forEach(([label,value],i)=>{const x=58+i*(cardW+gap);ctx.fillStyle='#101116cf';ctx.beginPath();ctx.roundRect(x,cardY,cardW,cardH,16);ctx.fill();ctx.strokeStyle='#ffffff35';ctx.lineWidth=1;ctx.stroke();ctx.fillStyle=accent;ctx.fillRect(x,cardY,cardW,5);text(value,x+13,cardY+100,38,'#fff',900,cardW-26);ctx.fillStyle='#ffffff55';ctx.fillRect(x+13,cardY+119,cardW-26,1);text(label.toUpperCase(),x+13,cardY+151,14,'#f2e8e9',700,cardW-26);});
+      text('YOUR GAME. YOUR NUMBERS.',58,1290,16,'#fff',700,780);
     } else {
       ctx.fillStyle='#f3f0e9';ctx.fillRect(480,0,420,H);cover(0,0,520,H,.94);ctx.fillStyle='#171717';ctx.fillRect(495,0,405,H);brand(545,70,'#fff');text(playerName,545,205,40,'#fff',900,310);text(role,547,245,16,'#e1d9cf',700,310);items.slice(0,5).forEach(([label,value],i)=>{const y=300+i*174;ctx.fillStyle='#292929';ctx.fillRect(530,y,340,145);ctx.fillStyle=accent;ctx.fillRect(530,y,6,145);text(value,555,y+63,40,'#fff',900,290);text(label.toUpperCase(),555,y+105,16,'#e9dfe0',700,285);});ctx.fillStyle='#f4f1e9';ctx.fillRect(0,1040,520,310);text(playerName,40,1120,32,'#171717',900,450);text(`${data.matches} MATCHES PLAYED`,42,1170,18,'#444',700,450);text('YOUR GAME. YOUR NUMBERS.',42,1280,14,'#444',700,450);
     }
