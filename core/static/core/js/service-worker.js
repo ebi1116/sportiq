@@ -1,8 +1,9 @@
-const CACHE_NAME = 'sportiq-pwa-v3';
+const CACHE_NAME = 'sportiq-pwa-v4';
 const APP_SHELL = [
   '/static/core/css/app.css',
   '/static/core/css/pwa.css',
   '/static/core/js/pwa.js',
+  '/static/core/js/card_templates.js',
   '/static/core/img/pwa-192.png',
   '/static/core/img/pwa-512.png',
   '/static/core/img/pwa-maskable-512.png',

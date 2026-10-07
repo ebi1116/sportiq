@@ -1,3 +1,10 @@
-.pwa-install-button{position:fixed;z-index:20;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));border:0;border-radius:999px;padding:12px 18px;background:#ff2948;color:#fff;font:700 14px/1.2 Inter,system-ui,sans-serif;box-shadow:0 8px 28px #ff294855;cursor:pointer}
+.pwa-install-button{position:fixed;z-index:20;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:11px;min-height:66px;padding:9px 14px 9px 9px;border:1px solid #ff718466;border-radius:18px;background:linear-gradient(135deg,#241116 0%,#120d10 100%);color:#fff;font:600 14px/1.2 Inter,system-ui,sans-serif;box-shadow:0 10px 34px #0009,0 5px 22px #ff294833;cursor:pointer;text-align:left;backdrop-filter:blur(14px);transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+.pwa-install-button:hover{transform:translateY(-2px);border-color:#ff7184aa;box-shadow:0 14px 38px #000a,0 7px 26px #ff294844}
+.pwa-install-button:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.pwa-install-logo{width:46px;height:46px;flex:none;border-radius:12px;object-fit:cover;box-shadow:0 3px 12px #0008}
+.pwa-install-copy{display:grid;gap:4px}
+.pwa-install-copy strong{font-size:14px;font-weight:800;letter-spacing:.01em}
+.pwa-install-copy small{color:#d6bcc1;font-size:11px;font-weight:500}
+.pwa-install-arrow{display:grid;place-items:center;width:29px;height:29px;margin-left:5px;border:1px solid #ff718455;border-radius:9px;background:#ff29481b;color:#ff8293;font-size:19px;line-height:1}
 .pwa-install-button[hidden]{display:none}
 @media(min-width:700px){.pwa-install-button{right:max(24px,calc((100vw - 640px)/2));bottom:24px}}
