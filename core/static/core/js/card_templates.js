@@ -10,12 +10,13 @@
   const themes = [
     {name:'Stadium Red', style:'red', colors:['#17070b','#690d20','#ff2948'], ink:'#fff'},
     {name:'Royal Blue', style:'blue', colors:['#06162f','#063d72','#40b8ff'], ink:'#fff'},
-    {name:'Legacy Mono', style:'mono', colors:['#f4f1e9','#d9d6cf','#171717'], ink:'#151515'},
     {name:'Black & Gold', style:'gold', colors:['#090909','#211a08','#e6b83e'], ink:'#fff'},
     {name:'Sunset', style:'sunset', colors:['#081520','#6e351f','#ff9b50'], ink:'#fff'},
     {name:'Ice Blue', style:'ice', colors:['#07172a','#10365a','#66d4ff'], ink:'#fff'},
     {name:'Boundary Green', style:'green', colors:['#07170d','#16451e','#a5df53'], ink:'#fff'},
-    {name:'Editorial', style:'editorial', colors:['#f3f0e9','#171717','#e33a36'], ink:'#151515'}
+    {name:'Editorial', style:'editorial', colors:['#f3f0e9','#171717','#e33a36'], ink:'#151515'},
+    {name:'Stat Poster', style:'statposter', colors:['#f0eee9','#202020','#ed1c2e'], ink:'#151515'},
+    {name:'Profile Poster', style:'profileposter', colors:['#f4f2ed','#dedbd4','#ed1c2e'], ink:'#151515'}
   ];
   let dialog, photoPromise;
 
@@ -70,6 +71,24 @@
       text(playerName,38,490,100,'#ffffff12',900,820);cover(150,100,600,650,.9);brand(58,75);text(playerName,58,820,54,'#fff',900,780);text(role,60,864,20,subColor,700);text(`${data.matches} MATCHES PLAYED`,60,930,22,accent,800);ctx.strokeStyle='#66d4ff88';ctx.lineWidth=2;ctx.strokeRect(58,970,784,250);items.slice(0,5).forEach(([label,value],i)=>{const x=72+i*153;text(value,x,1065,31,'#fff',900,140);text(label.toUpperCase(),x,1107,12,'#b6e8ff',700,140);});footer();
     } else if (theme.style==='green') {
       cover(0,0,W,820,.84);const fade=ctx.createLinearGradient(0,500,0,900);fade.addColorStop(0,'#07170d00');fade.addColorStop(1,dark);ctx.fillStyle=fade;ctx.fillRect(0,480,W,420);brand();text(playerName,58,875,55,'#fff',900,780);text(role,60,916,20,subColor,700);text(`${data.matches} MATCHES PLAYED`,60,984,21,accent,800);statsGrid(60,1020,780,4,items.slice(0,4));footer();
+    } else if (theme.style==='statposter') {
+      ctx.fillStyle='#e9e7e2';ctx.fillRect(0,0,W,H);
+      if(photo){ctx.save();ctx.filter='grayscale(1)';ctx.globalAlpha=.28;cover(0,0,W,H);ctx.restore();}
+      ctx.fillStyle='#171717';ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(620,0);ctx.lineTo(490,H);ctx.lineTo(0,H);ctx.closePath();ctx.fill();
+      ctx.save();ctx.globalAlpha=.95;cover(0,260,590,1090,.95);ctx.restore();
+      const wash=ctx.createLinearGradient(0,800,0,H);wash.addColorStop(0,'#17171700');wash.addColorStop(1,'#171717');ctx.fillStyle=wash;ctx.fillRect(0,780,620,570);
+      brand(48,72,'#fff');ctx.fillStyle='#ed1c2e';ctx.fillRect(592,0,8,H);text(playerName,630,245,47,'#171717',900,245);text(role,632,286,16,'#444',700,245);
+      items.slice(0,5).forEach(([label,value],i)=>{const y=380+i*174;ctx.fillStyle='#252525';ctx.beginPath();ctx.roundRect(620,y,245,145,18);ctx.fill();ctx.fillStyle=accent;ctx.fillRect(620,y,7,145);text(value,645,y+68,43,'#fff',900,200);text(label.toUpperCase(),646,y+107,16,'#ddd',700,200);});
+      text('YOUR GAME. YOUR NUMBERS.',48,1315,16,'#fff',700,500);
+    } else if (theme.style==='profileposter') {
+      ctx.fillStyle='#f4f2ed';ctx.fillRect(0,0,W,H);
+      if(photo){ctx.save();ctx.filter='grayscale(1)';ctx.globalAlpha=.35;cover(45,90,810,730);ctx.restore();cover(150,225,600,670,.96);}
+      else cover(150,225,600,670,.96);
+      const fade=ctx.createLinearGradient(0,720,0,970);fade.addColorStop(0,'#f4f2ed00');fade.addColorStop(1,'#f4f2ed');ctx.fillStyle=fade;ctx.fillRect(0,700,W,280);
+      brand(52,72,'#171717');text(playerName,55,940,58,accent,900,790);text(role,60,982,20,'#222',700,760);ctx.fillStyle=accent;ctx.fillRect(60,1010,130,5);
+      ctx.fillStyle='#ffffffdd';ctx.beginPath();ctx.roundRect(38,1050,824,220,22);ctx.fill();
+      items.slice(0,5).forEach(([label,value],i)=>{const x=52+i*160;if(i) {ctx.fillStyle='#17171733';ctx.fillRect(x-8,1080,1,155);}text(value,x,1160,34,'#171717',900,145);text(label.toUpperCase(),x,1200,13,'#444',700,145);});
+      text('YOUR GAME. YOUR NUMBERS.',248,1318,16,'#222',700,500);
     } else {
       ctx.fillStyle='#f3f0e9';ctx.fillRect(480,0,420,H);cover(0,0,520,H,.94);ctx.fillStyle='#171717';ctx.fillRect(495,0,405,H);brand(545,70,'#fff');text(playerName,545,205,40,'#fff',900,310);text(role,547,245,16,'#e1d9cf',700,310);items.slice(0,5).forEach(([label,value],i)=>{const y=300+i*174;ctx.fillStyle='#292929';ctx.fillRect(530,y,340,145);ctx.fillStyle=accent;ctx.fillRect(530,y,6,145);text(value,555,y+63,40,'#fff',900,290);text(label.toUpperCase(),555,y+105,16,'#e9dfe0',700,285);});ctx.fillStyle='#f4f1e9';ctx.fillRect(0,1040,520,310);text(playerName,40,1120,32,'#171717',900,450);text(`${data.matches} MATCHES PLAYED`,42,1170,18,'#444',700,450);text('YOUR GAME. YOUR NUMBERS.',42,1280,14,'#444',700,450);
     }
