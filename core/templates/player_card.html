@@ -25,6 +25,8 @@
         <div class="player-stat"><strong>{{ s.bat.fifties }}</strong><span>50s</span></div>
         <div class="player-stat"><strong>{{ s.bat.hundreds }}</strong><span>100s</span></div>
         <div class="player-stat"><strong>{{ s.bat.hs }}</strong><span>High score</span></div>
+        <div class="player-stat"><strong>{{ s.bat.fours }}</strong><span>4s</span></div>
+        <div class="player-stat"><strong>{{ s.bat.sixes }}</strong><span>6s</span></div>
       </div>{% else %}<p class="player-card-empty">No batting figures recorded yet.</p>{% endif %}
     </section>
 
@@ -158,7 +160,15 @@
     role: "{{ player.get_role_display|escapejs }}",
     city: "{{ player.city|escapejs }}",
     username: "{{ player.username|escapejs }}",
-    matches: "{{ s.matches|escapejs }}"
+    matches: "{{ s.matches|escapejs }}",
+    battingStats: [
+      ["Runs", "{{ s.bat.runs|escapejs }}"],
+      ["Highest score", "{{ s.bat.hs|escapejs }}"],
+      ["4s", "{{ s.bat.fours|escapejs }}"],
+      ["6s", "{{ s.bat.sixes|escapejs }}"],
+      ["50s", "{{ s.bat.fifties|escapejs }}"],
+      ["100s", "{{ s.bat.hundreds|escapejs }}"]
+    ]
   };
   show(0);
 })();
