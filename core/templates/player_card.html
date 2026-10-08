@@ -58,6 +58,7 @@
   </div>
   <button class="btn btn-red w-100 mt-3" type="button" id="download-card">↓&nbsp; Download card</button>
 </div>
+{{ card_data|json_script:"player-card-data" }}
 {% endblock %}
 {% block js %}
 <script>
@@ -91,99 +92,8 @@
     if (e.key === 'ArrowLeft') show(active - 1);
   });
 
-  document.getElementById('download-card').addEventListener('click', async event => {
-    const button = event.currentTarget, slide = slides[active], canvas = document.createElement('canvas');
-    const rows = [...slide.querySelectorAll('.player-stat')].map(tile => [tile.querySelector('span').textContent.trim(), tile.querySelector('strong').textContent.trim()]);
-    const opponents = [...slide.querySelectorAll('.opponent-row')].map(row => [row.querySelector('.opponent-team strong').textContent.trim(), row.querySelector('.opponent-runs').textContent.trim()]);
-    const stats = rows.length ? rows : opponents;
-    const pixelRatio = 3;
-    canvas.width = 900 * pixelRatio; canvas.height = 1350 * pixelRatio;
-    const ctx = canvas.getContext('2d');
-    ctx.scale(pixelRatio, pixelRatio);
-    const W = 900, H = 1350;
-    const bg = ctx.createLinearGradient(0, 0, W, H); bg.addColorStop(0, '#18070b'); bg.addColorStop(.43, '#390912'); bg.addColorStop(1, '#10090d');
-    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
-    // Stadium light and energetic diagonal color fields.
-    const glow = ctx.createRadialGradient(650, 410, 15, 650, 410, 540); glow.addColorStop(0, '#ff334f77'); glow.addColorStop(1, '#ff334f00');
-    ctx.fillStyle = glow; ctx.fillRect(0, 0, W, 850);
-    ctx.save(); ctx.globalAlpha = .26;
-    for (let i = -900; i < 1500; i += 150) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i + 540, 0); ctx.lineTo(i - 100, 900); ctx.lineTo(i - 640, 900); ctx.closePath(); ctx.fillStyle = i % 300 ? '#ff334f' : '#d71936'; ctx.fill(); }
-    ctx.restore();
-    ctx.fillStyle = '#f5f4ed'; ctx.font = '800 23px Arial'; ctx.letterSpacing = '6px'; ctx.fillText('SPORTIQ  /  PLAYER EDITION', 60, 78);
-    const photoUrl = "{{ photo_url|escapejs }}";
-    if (photoUrl) {
-      const portrait = new Image();
-      portrait.src = photoUrl;
-      try { await portrait.decode(); } catch (_) {}
-      if (portrait.naturalWidth) {
-        const area = {x: 0, y: 110, w: W, h: 690};
-        const scale = Math.max(area.w / portrait.naturalWidth, area.h / portrait.naturalHeight);
-        const pw = portrait.naturalWidth * scale, ph = portrait.naturalHeight * scale;
-        ctx.save(); ctx.beginPath(); ctx.rect(area.x, area.y, area.w, area.h); ctx.clip();
-        ctx.globalAlpha = .88; ctx.drawImage(portrait, (W - pw) / 2, area.y + (area.h - ph) / 2, pw, ph); ctx.restore();
-      }
-    }
-    // Fade the portrait into the graphic so its lower edge blends into the title panel.
-    const fade = ctx.createLinearGradient(0, 490, 0, 820); fade.addColorStop(0, '#10090d00'); fade.addColorStop(1, '#10090d'); ctx.fillStyle = fade; ctx.fillRect(0, 490, W, 330);
-    ctx.fillStyle = '#390912'; ctx.fillRect(0, 755, W, 125);
-    ctx.fillStyle = '#ffffff'; ctx.font = '900 56px Arial'; ctx.letterSpacing = '0px';
-    const playerName = '{{ player.full_name|escapejs }}'.toUpperCase();
-    ctx.fillText(playerName, 56, 830, 790);
-    ctx.fillStyle = '#f0b8c0'; ctx.font = '700 22px Arial'; ctx.fillText('{{ player.get_role_display|escapejs }}{% if player.city %} · {{ player.city|escapejs }}{% endif %}'.toUpperCase(), 60, 864, 780);
-    ctx.fillStyle = '#eef5f4'; ctx.font = '700 22px Arial'; ctx.letterSpacing = '3px'; ctx.fillText(slide.dataset.title.toUpperCase() + '  /  CAREER RECORD', 60, 930);
-    const matchY = 1000;
-    ctx.fillStyle = '#ff334f'; ctx.fillRect(60, matchY - 48, 5, 76);
-    ctx.fillStyle = '#ffffff'; ctx.font = '900 64px Arial'; ctx.letterSpacing = '0px'; ctx.fillText('{{ s.matches }}', 84, matchY + 4);
-    ctx.fillStyle = '#e6b9c0'; ctx.font = '700 20px Arial'; ctx.fillText('MATCHES PLAYED', 88, matchY + 31);
-    const remaining = stats.slice(0, 4), columns = 2, gap = 20, cellW = (W - 120 - gap) / columns, cellH = 95;
-    const statsY = 1060;
-    remaining.forEach(([name, value], i) => {
-      const x = 60 + (i % columns) * (cellW + gap), y = statsY + Math.floor(i / columns) * (cellH + 14);
-      ctx.fillStyle = '#ffffff18'; ctx.fillRect(x, y, cellW, cellH);
-      ctx.fillStyle = '#f0b8c0'; ctx.font = '700 16px Arial'; ctx.letterSpacing = '2px'; ctx.fillText(name.toUpperCase(), x + 16, y + 29, cellW - 32);
-      ctx.fillStyle = '#ffffff'; ctx.font = '900 36px Arial'; ctx.letterSpacing = '0px'; ctx.fillText(value, x + 16, y + 72, cellW - 32);
-    });
-    ctx.fillStyle = '#ff334f'; ctx.fillRect(60, 1290, 780, 3);
-    ctx.fillStyle = '#f0dadd'; ctx.font = '700 16px Arial'; ctx.letterSpacing = '3px'; ctx.fillText('YOUR GAME. YOUR NUMBERS.', 60, 1325);
-    const link = document.createElement('a');
-    link.download = `sportiq-${'{{ player.username|escapejs }}'}-${slide.dataset.title.toLowerCase()}.png`;
-    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-    if (!blob) { button.textContent = 'Could not create card'; return; }
-    link.href = URL.createObjectURL(blob); link.click();
-    window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
-    button.textContent = '✓  Downloaded';
-    window.setTimeout(() => { button.innerHTML = '↓&nbsp; Download card'; }, 1800);
-  });
-  window.playerCardExport = {
-    photoUrl: "{{ photo_url|escapejs }}",
-    playerName: "{{ player.full_name|escapejs }}",
-    role: "{{ player.get_role_display|escapejs }}",
-    city: "{{ player.city|escapejs }}",
-    username: "{{ player.username|escapejs }}",
-    matches: "{{ s.matches|escapejs }}",
-    battingStats: [
-      ["Runs", "{{ s.bat.runs|escapejs }}"],
-      ["Strike rate", "{{ s.bat.sr|escapejs }}"],
-      ["Innings", "{{ s.bat.inn|escapejs }}"],
-      ["Average", "{{ s.bat.avg|escapejs }}"],
-      ["Highest score", "{{ s.bat.hs|escapejs }}"],
-      ["4s", "{{ s.bat.fours|escapejs }}"],
-      ["6s", "{{ s.bat.sixes|escapejs }}"],
-      ["50s", "{{ s.bat.fifties|escapejs }}"],
-      ["100s", "{{ s.bat.hundreds|escapejs }}"]
-    ],
-    bowlingStats: [
-      ["Wickets", "{{ s.bowl.wkts|escapejs }}"],
-      ["Economy", "{{ s.bowl.econ|escapejs }}"],
-      ["Innings", "{{ s.bowl.inn|escapejs }}"],
-      ["Overs", "{{ s.bowl.overs|escapejs }}"],
-      ["Average", "{{ s.bowl.avg|escapejs }}"],
-      ["Best figures", "{{ s.bowl.best|escapejs }}"],
-      ["5 wicket hauls", "{{ s.bowl.w5|escapejs }}"]
-    ]
-  };
   show(0);
 })();
 </script>
-<script src="{% static 'core/js/card_templates.js' %}"></script>
+<script src="{% static 'core/js/player_card_download.js' %}"></script>
 {% endblock %}

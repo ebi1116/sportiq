@@ -150,8 +150,25 @@ def player_card(request):
             row["runs"] += p.runs
     opponents = [{"name": name, **values} for name, values in by_opponent.items()]
     opponents.sort(key=lambda row: (-row["runs"], row["name"].lower()))
+    card_data = {
+        "photo": request.profile.photo.url if request.profile.photo else "",
+        "logo": "/static/core/img/sportiq-cricket-logo.png",
+        "background": "/static/core/img/player-card-background.png",
+        "name": request.profile.full_name,
+        "role": request.profile.get_role_display(),
+        "country": request.profile.city or "",
+        "username": request.profile.username,
+        "matches": str(s["matches"]),
+        "stats": [
+            ["Runs", str(s["bat"]["runs"])], ["Strike Rate", str(s["bat"]["sr"])],
+            ["Innings", str(s["bat"]["inn"])], ["Average", str(s["bat"]["avg"])],
+            ["50s", str(s["bat"]["fifties"])], ["100s", str(s["bat"]["hundreds"])],
+            ["Highest Score", str(s["bat"]["hs"])], ["4s", str(s["bat"]["fours"])],
+            ["6s", str(s["bat"]["sixes"])],
+        ],
+    }
     return render(request, "player_card.html", {"s": s, "player": request.profile, "opponents": opponents,
-        "photo_url": request.profile.photo.url if request.profile.photo else ""})
+        "photo_url": card_data["photo"], "card_data": card_data})
 
 def public_profile(request, username):
     player = get_object_or_404(Profile, username=username.lower())

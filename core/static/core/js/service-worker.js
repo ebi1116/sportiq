@@ -1,9 +1,11 @@
-const CACHE_NAME = 'sportiq-pwa-v12';
+const CACHE_NAME = 'sportiq-pwa-v17';
 const APP_SHELL = [
   '/static/core/css/app.css',
   '/static/core/css/pwa.css',
   '/static/core/js/pwa.js',
-  '/static/core/js/card_templates.js',
+  '/static/core/js/player_card_download.js',
+  '/static/core/img/player-card-background.png',
+  '/static/core/img/sportiq-cricket-logo.png',
   '/static/core/img/pwa-192.png',
   '/static/core/img/pwa-512.png',
   '/static/core/img/pwa-maskable-512.png',

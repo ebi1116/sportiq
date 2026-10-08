@@ -160,3 +160,4 @@ label { font-size: .78rem; color: #c6c6ce; font-weight: 600; }
   .player-stat { min-height:50px; padding:9px 12px; }
 }
 @media (prefers-reduced-motion: reduce) { *,*::before,*::after { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+
