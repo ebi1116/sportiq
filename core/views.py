@@ -159,13 +159,21 @@ def player_card(request):
         "country": request.profile.city or "",
         "username": request.profile.username,
         "matches": str(s["matches"]),
-        "stats": [
+        "cards": {
+          "Batting": [
             ["Runs", str(s["bat"]["runs"])], ["Strike Rate", str(s["bat"]["sr"])],
             ["Innings", str(s["bat"]["inn"])], ["Average", str(s["bat"]["avg"])],
             ["50s", str(s["bat"]["fifties"])], ["100s", str(s["bat"]["hundreds"])],
             ["Highest Score", str(s["bat"]["hs"])], ["4s", str(s["bat"]["fours"])],
             ["6s", str(s["bat"]["sixes"])],
-        ],
+          ],
+          "Bowling": [
+            ["Wickets", str(s["bowl"]["wkts"])], ["Economy", str(s["bowl"]["econ"])],
+            ["Innings", str(s["bowl"]["inn"])], ["Overs", str(s["bowl"]["overs"])],
+            ["Average", str(s["bowl"]["avg"])], ["Best Figures", str(s["bowl"]["best"])],
+            ["5 Wicket Hauls", str(s["bowl"]["w5"])],
+          ],
+        },
     }
     return render(request, "player_card.html", {"s": s, "player": request.profile, "opponents": opponents,
         "photo_url": card_data["photo"], "card_data": card_data})

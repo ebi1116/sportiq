@@ -1,5 +1,8 @@
 from decimal import Decimal
+from io import BytesIO
 from django import forms
+from django.core.files.base import ContentFile
+from PIL import Image
 from .models import Profile, Match, MatchPerformance
 
 def style(form):
@@ -16,6 +19,17 @@ class ProfileForm(forms.ModelForm):
         super().__init__(*a, **k)
         style(self)
         self.fields["photo"].widget.attrs.update({"accept": "image/*"})
+    def clean_photo(self):
+        photo = self.cleaned_data.get("photo")
+        if not photo:
+            return photo
+        # Store profile images as transparent PNG cutouts for the player card.
+        from rembg import remove
+        cutout = remove(photo.read())
+        with Image.open(BytesIO(cutout)) as image:
+            output = BytesIO()
+            image.convert("RGBA").save(output, format="PNG", optimize=True)
+        return ContentFile(output.getvalue(), name=f"{photo.name.rsplit('.', 1)[0]}.png")
     def clean_username(self): return self.cleaned_data["username"].lower()
 
 class MatchForm(forms.ModelForm):

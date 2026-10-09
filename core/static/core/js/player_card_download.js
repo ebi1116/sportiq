@@ -22,6 +22,8 @@
 
   async function drawCard() {
     const W = 1080, H = 1080;
+    const activeTitle = document.querySelector('.player-card-slide.is-active')?.dataset.title || 'Batting';
+    const stats = data.cards[activeTitle] || data.cards.Batting;
     const background = await image(data.background);
     if (background) cover(background, 0, 0, W, H);
     else { ctx.fillStyle = '#09090c'; ctx.fillRect(0, 0, W, H); }
@@ -39,7 +41,13 @@
       const portrait = await image(data.photo);
       if (portrait) {
         ctx.save(); ctx.beginPath(); ctx.roundRect(610, 52, 426, 468, 26); ctx.clip();
-        cover(portrait, 610, 52, 426, 468);
+        if (portrait.decode) await portrait.decode().catch(() => {});
+        if (portrait.naturalWidth) {
+          // Preserve PNG alpha and anchor the cutout at the bottom of the portrait area.
+          const scale = Math.min(426 / portrait.naturalWidth, 468 / portrait.naturalHeight);
+          const iw = portrait.naturalWidth * scale, ih = portrait.naturalHeight * scale;
+          ctx.drawImage(portrait, 610 + (426 - iw) / 2, 520 - ih, iw, ih);
+        }
         const blend = ctx.createLinearGradient(570, 0, 840, 0);
         blend.addColorStop(0, '#10080d'); blend.addColorStop(.4, '#10080d33'); blend.addColorStop(1, '#10080d00');
         ctx.fillStyle = blend; ctx.fillRect(570, 52, 466, 468);
@@ -70,12 +78,12 @@
     const statShade = ctx.createLinearGradient(0, 520, 0, 1080);
     statShade.addColorStop(0, '#09090dbb'); statShade.addColorStop(1, '#08080df0');
     ctx.fillStyle = statShade; ctx.fillRect(0, 520, W, 560);
-    ctx.fillStyle = '#ff667d'; ctx.font = '900 15px Arial'; ctx.letterSpacing = '3px'; ctx.fillText('01', 54, 581);
-    ctx.fillStyle = '#fff'; ctx.font = '900 32px Arial'; ctx.letterSpacing = '0'; ctx.fillText('Batting', 98, 582);
-    ctx.fillStyle = '#aaa5aa'; ctx.font = '500 16px Arial'; ctx.fillText('Career batting record', 98, 610);
+    ctx.fillStyle = '#ff667d'; ctx.font = '900 15px Arial'; ctx.letterSpacing = '3px'; ctx.fillText(activeTitle === 'Bowling' ? '02' : '01', 54, 581);
+    ctx.fillStyle = '#fff'; ctx.font = '900 32px Arial'; ctx.letterSpacing = '0'; ctx.fillText(activeTitle, 98, 582);
+    ctx.fillStyle = '#aaa5aa'; ctx.font = '500 16px Arial'; ctx.fillText(`Career ${activeTitle.toLowerCase()} record`, 98, 610);
     const x0 = 54, gap = 18, cellW = 477, cellH = 74, top = 634, rowGap = 12;
     const glyphs = ['▥', '↯', '◆', 'Ø', '50', '100', '★', '4', '6'];
-    data.stats.forEach(([label, value], i) => {
+    stats.forEach(([label, value], i) => {
       const compact = i >= 6;
       const w = compact ? (972 - 28) / 3 : cellW;
       const col = compact ? i - 6 : i % 2;
@@ -105,10 +113,11 @@
     button.textContent = 'Preparing card…';
     try {
       await drawCard();
-      const link = document.createElement('a'); link.download = `sportiq-${data.username}-batting.png`;
+      const activeTitle = document.querySelector('.player-card-slide.is-active')?.dataset.title || 'Batting';
+      const link = document.createElement('a'); link.download = `sportiq-${data.username}-${activeTitle.toLowerCase()}.png`;
       link.href = canvas.toDataURL('image/png'); link.click();
       button.textContent = '✓  Downloaded';
-    } catch (_) { button.textContent = 'Could not create card'; }
+    } catch (error) { console.error('Player card download failed:', error); button.textContent = 'Could not create card'; }
     window.setTimeout(() => { button.innerHTML = original; button.disabled = false; }, 1800);
   });
 })();

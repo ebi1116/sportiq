@@ -90,7 +90,7 @@ label { font-size: .78rem; color: #c6c6ce; font-weight: 600; }
 .player-card-matches { display:flex; align-items:baseline; gap:7px; }
 .player-card-matches strong { font-size:1.8rem; line-height:1; }
 .player-card-matches span { color:#e6b9c0; font-size:.75rem; }
-.player-card-photo { position:absolute; z-index:1; right:0; bottom:0; width:42%; height:100%; object-fit:cover; object-position:center 20%; mask-image:linear-gradient(90deg,transparent 0%,#000 34%); }
+.player-card-photo { position:absolute; z-index:1; right:0; bottom:0; width:48%; height:100%; object-fit:contain; object-position:center bottom; filter:drop-shadow(-14px 5px 18px #0008); }
 .player-card-photo-empty { display:grid; place-items:center; width:38%; height:88%; top:auto; border-radius:110px 110px 0 0; background:linear-gradient(145deg,#ff586b,#5a0916); color:#fff; font-size:4.5rem; font-weight:900; mask-image:linear-gradient(90deg,transparent 0%,#000 34%); }
 .player-card-glow { position:absolute; z-index:0; right:17%; bottom:-60px; width:180px; height:110px; border-radius:50%; background:#ff1f3d77; filter:blur(50px); }
 .player-card-section { margin:22px 0; }
