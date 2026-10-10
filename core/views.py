@@ -76,6 +76,7 @@ def setup(request):
     form = ProfileForm(request.POST or None, request.FILES or None, initial={"full_name": request.user.get_full_name(), "username": name})
     if form.is_valid():
         p = form.save(commit=False); p.user = request.user; p.save()
+        form.create_photo_cutout(p)
         return redirect("dashboard")
     return render(request, "setup.html", {"form": form})
 
@@ -151,7 +152,8 @@ def player_card(request):
     opponents = [{"name": name, **values} for name, values in by_opponent.items()]
     opponents.sort(key=lambda row: (-row["runs"], row["name"].lower()))
     card_data = {
-        "photo": request.profile.photo.url if request.profile.photo else "",
+        "photo": request.profile.photo_cutout.url if request.profile.photo_cutout else "",
+        "original_photo": request.profile.photo.url if request.profile.photo else "",
         "logo": "/static/core/img/sportiq-cricket-logo.png",
         "background": "/static/core/img/player-card-background.png",
         "name": request.profile.full_name,
@@ -173,7 +175,24 @@ def player_card(request):
             ["Average", str(s["bowl"]["avg"])], ["Best Figures", str(s["bowl"]["best"])],
             ["5 Wicket Hauls", str(s["bowl"]["w5"])],
           ],
+          "Matches": [
+            [row["name"], f'{row["runs"]} runs · {row["matches"]} matches']
+            for row in opponents
+          ] or [["Matches", "No opponent data yet"]],
         },
+        "stats": (
+          [["Matches", str(s["matches"])], ["Wickets", str(s["bowl"]["wkts"])],
+           ["Bowling Average", str(s["bowl"]["avg"])], ["Economy Rate", str(s["bowl"]["econ"])],
+           ["Strike Rate", str(s["bowl"]["sr"])], ["Overs", str(s["bowl"]["overs"])],
+           ["Best Bowling", str(s["bowl"]["best"])], ["4-Wicket Hauls", str(s["bowl"]["w4"])],
+           ["5-Wicket Hauls", str(s["bowl"]["w5"])], ["Innings", str(s["bowl"]["inn"])]]
+          if request.profile.role == "bowl" else
+          [["Matches", str(s["matches"])], ["Runs", str(s["bat"]["runs"])],
+           ["Batting Average", str(s["bat"]["avg"])], ["Strike Rate", str(s["bat"]["sr"])],
+           ["Innings", str(s["bat"]["inn"])], ["50s", str(s["bat"]["fifties"])],
+           ["100s", str(s["bat"]["hundreds"])], ["Highest Score", str(s["bat"]["hs"])],
+           ["4s", str(s["bat"]["fours"])], ["6s", str(s["bat"]["sixes"])]]
+        ),
     }
     return render(request, "player_card.html", {"s": s, "player": request.profile, "opponents": opponents,
         "photo_url": card_data["photo"], "card_data": card_data})

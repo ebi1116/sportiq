@@ -10,7 +10,7 @@
       <p>{{ player.get_role_display }}{% if player.city %} · {{ player.city }}{% endif %}</p>
       <div class="player-card-matches"><strong>{{ s.matches }}</strong><span>career matches</span></div>
     </div>
-    {% if player.photo %}<img class="player-card-photo" src="{{ player.photo.url }}" alt="{{ player.full_name }}">{% else %}<div class="player-card-photo player-card-photo-empty">{{ player.full_name|first|upper }}</div>{% endif %}
+    {% if player.photo_cutout %}<img class="player-card-photo" src="{{ player.photo_cutout.url }}" alt="{{ player.full_name }}">{% elif player.photo %}<img class="player-card-photo" src="{{ player.photo.url }}" alt="{{ player.full_name }}">{% else %}<div class="player-card-photo player-card-photo-empty">{{ player.full_name|first|upper }}</div>{% endif %}
     <div class="player-card-glow"></div>
   </div>
 
@@ -95,5 +95,5 @@
   show(0);
 })();
 </script>
-<script src="{% static 'core/js/player_card_download.js' %}?v=2"></script>
+<script src="{% static 'core/js/player_card_download.js' %}?v=8"></script>
 {% endblock %}

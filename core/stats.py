@@ -19,6 +19,7 @@ def analyse(profile):
     best = max(bowl, key=lambda p: (p.wickets, -p.runs_conceded)) if bowl else None
     W = dict(inn=len(bowl), overs=overs_str(bb), wkts=w, runs=rc, econ=_d(rc * 6, bb, 2), avg=_d(rc, w, 2),
         sr=_d(bb, w), best=f"{best.wickets}/{best.runs_conceded}" if best else "-", w3=sum(p.wickets >= 3 for p in bowl),
+        w4=sum(p.wickets >= 4 for p in bowl),
         w5=sum(p.wickets >= 5 for p in bowl), maidens=sum(p.maidens for p in bowl),
         dotpct=_d(sum(p.dot_balls for p in bowl) * 100, bb))
     F = dict(c=sum(p.catches for p in P), ro=sum(p.run_outs for p in P), st=sum(p.stumpings for p in P))

@@ -14,6 +14,7 @@ class Profile(models.Model):
     bowling_style = models.CharField(max_length=60, blank=True, help_text="e.g. Right-arm medium")
     city = models.CharField(max_length=60, blank=True)
     photo = models.ImageField(upload_to="profile_photos/", blank=True)
+    photo_cutout = models.ImageField(upload_to="profile_cutouts/", blank=True)
     created = models.DateTimeField(auto_now_add=True)
     def __str__(self): return self.full_name
 
