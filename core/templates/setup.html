@@ -1,6 +1,6 @@
 {% extends "base.html" %}{% block title %}{% if editing %}Edit profile{% else %}Create profile{% endif %} | SportIQ{% endblock %}{% block content %}<div class="cardx"><h4>{% if editing %}Edit your profile{% else %}Create your player profile{% endif %}</h4><p class="text-secondary">{% if editing %}Update your public identity and profile photo.{% else %}Add a photo and details to create your public identity on SportIQ.{% endif %}</p>
 {% if editing and profile.photo %}<div class="current-photo"><img src="{{ profile.photo.url }}" alt="Current profile photo"><span>Current profile photo</span></div>{% endif %}
-<form method="post" enctype="multipart/form-data" id="profile-form">{% csrf_token %}{% include "_form.html" %}<button class="btn btn-red w-100 mt-4">{% if editing %}Save changes{% else %}Save profile{% endif %}</button></form></div>{% endblock %}
+<form method="post" enctype="multipart/form-data" id="profile-form">{% csrf_token %}{% include "_form.html" %}<button class="btn btn-red w-100 mt-4" type="submit">{% if editing %}Save changes{% else %}Save profile{% endif %}</button><div class="profile-save-status" id="profile-save-status" role="status" aria-live="polite" hidden><span class="profile-save-spinner" aria-hidden="true"></span><span id="profile-save-message">Updating your profile. Photo cutout may take a little while.</span></div></form></div>{% endblock %}
 {% block js %}<script>
 (() => {
   const input = document.querySelector('#profile-form input[type="file"]');
@@ -44,18 +44,36 @@
   });
   canvas.addEventListener('pointerup', () => { dragging = false; });
   canvas.addEventListener('pointercancel', () => { dragging = false; });
-  document.getElementById('profile-form').addEventListener('submit', event => {
-    if (!image) return;
+  const form = document.getElementById('profile-form');
+  const saveButton = form.querySelector('button[type="submit"]');
+  const saveStatus = document.getElementById('profile-save-status');
+  const saveMessage = document.getElementById('profile-save-message');
+  let submitting = false;
+  const showSaving = message => {
+    submitting = true;
+    saveStatus.hidden = false;
+    saveMessage.textContent = message;
+    saveButton.disabled = true;
+    saveButton.textContent = 'Updating…';
+  };
+  form.addEventListener('submit', event => {
+    if (submitting) { event.preventDefault(); return; }
+    if (!image) {
+      showSaving('Updating your profile. Photo cutout may take a little while.');
+      return;
+    }
     event.preventDefault();
+    showSaving('Preparing photo…');
     const out = document.createElement('canvas'); out.width = out.height = 1024;
     out.getContext('2d').drawImage(canvas, 0, 0, 1024, 1024);
     const type = ['image/jpeg', 'image/png', 'image/webp'].includes(input.files[0].type) ? input.files[0].type : 'image/png';
     out.toBlob(blob => {
-      if (!blob) { event.target.submit(); return; }
+      if (!blob) { saveMessage.textContent = 'Uploading photo and creating cutout…'; form.submit(); return; }
       const ext = type === 'image/jpeg' ? 'jpg' : type.split('/')[1];
       const cropped = new File([blob], `profile-crop.${ext}`, {type});
       const transfer = new DataTransfer(); transfer.items.add(cropped); input.files = transfer.files;
-      event.target.submit();
+      saveMessage.textContent = 'Uploading photo and creating cutout…';
+      form.submit();
     }, type, .95);
   });
 })();

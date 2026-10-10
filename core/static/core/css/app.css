@@ -56,6 +56,12 @@ label { font-size: .78rem; color: #c6c6ce; font-weight: 600; }
 .form-control[type="file"]::file-selector-button { min-height: 36px; margin: 0 .7rem 0 0; padding: .4rem .8rem; border: 0; border-radius: 9px; background: #302027; color: #fff; font-weight: 700; }
 .current-photo { display: flex; align-items: center; gap: 12px; margin: 0 0 18px; color: var(--muted); font-size: .82rem; }
 .current-photo img { width: 52px; height: 52px; border: 1px solid var(--line); border-radius: 50%; object-fit: cover; }
+.profile-save-status { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 14px; color: #f0c5cb; font-size: .82rem; text-align: center; }
+.profile-save-status[hidden] { display: none; }
+.profile-save-spinner { width: 18px; height: 18px; flex: none; border: 2px solid #ff334f55; border-top-color: var(--red); border-radius: 50%; animation: profile-save-spin .75s linear infinite; }
+.btn-red:disabled { cursor: wait; opacity: .78; }
+@keyframes profile-save-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .profile-save-spinner { animation-duration: 2s; } }
 .photo-adjust { display: grid; grid-template-columns: 1fr; gap: 8px; width: min(100%, 260px); margin-top: 12px; }
 .photo-adjust[hidden] { display: none; }
 .photo-adjust canvas { width: 100%; aspect-ratio: 1; border: 1px solid #45454c; border-radius: 14px; touch-action: none; cursor: grab; }
